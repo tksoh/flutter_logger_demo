@@ -40,7 +40,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   logger = Logger(
     printer: PlainLogPrinter(),
-    output: FileOutput(file: await openLogFile()),
+    output: MultiOutput([
+      ConsoleOutput(),
+      FileOutput(file: await openLogFile()),
+    ]),
     filter: kDebugMode ? DevelopmentFilter() : ProductionFilter(),
   );
   runApp(const MyApp());
