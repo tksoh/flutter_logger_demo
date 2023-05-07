@@ -102,12 +102,8 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             const SizedBox(height: 10),
             ElevatedButton(
-              onPressed: () async {
-                if (Platform.isWindows) return;
-
-                Share.shareFiles([logFilePath], text: 'log data');
-              },
-              child: const Text('share'),
+              onPressed: Platform.isWindows ? null : shareLog,
+              child: const Text('Share Log File'),
             ),
           ],
         ),
@@ -118,5 +114,10 @@ class _MyHomePageState extends State<MyHomePage> {
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  shareLog() {
+    // ignore: deprecated_member_use
+    Share.shareFiles([logFilePath], text: 'log data');
   }
 }
