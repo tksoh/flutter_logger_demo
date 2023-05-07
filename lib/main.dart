@@ -19,28 +19,12 @@ Future<File> openLogFile() async {
 
 late Logger logger;
 
-void showLog() {
-  logger.i('log file = $logFilePath');
-
-  logger.d('This is a debug message test');
-
-  // loggerNoStack.i('Info message');
-
-  // loggerNoStack.w('Just a warning!');
-
-  // logger.e('Error! Something bad happened', 'Test Error');
-
-  // loggerNoStack.v({'key': 5, 'value': 'something'});
-
-  // Logger(printer: SimplePrinter(colors: true)).v('boom');
-}
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   logger = Logger(
     printer: PlainLogPrinter(),
     output: MultiOutput([
-      ConsoleOutput(),
+      if (kDebugMode) ConsoleOutput(),
       FileOutput(file: await openLogFile()),
     ]),
     filter: kDebugMode ? DevelopmentFilter() : ProductionFilter(),
@@ -78,10 +62,10 @@ class _MyHomePageState extends State<MyHomePage> {
   final start = DateTime.now();
 
   void _incrementCounter() {
-    showLog();
     setState(() {
       _counter++;
     });
+    addLog();
   }
 
   @override
@@ -118,6 +102,11 @@ class _MyHomePageState extends State<MyHomePage> {
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  void addLog() {
+    logger.i('log file = $logFilePath');
+    logger.d('Counter = $_counter');
   }
 
   shareLog() {
