@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
+import 'plain_printer.dart';
+
 late String logFilePath;
 
 Future<File> openLogFile() async {
@@ -37,7 +39,7 @@ void showLog() {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   logger = Logger(
-    printer: PrettyPrinter(colors: false),
+    printer: PlainLogPrinter(),
     output: FileOutput(file: await openLogFile()),
     filter: kDebugMode ? DevelopmentFilter() : ProductionFilter(),
   );
