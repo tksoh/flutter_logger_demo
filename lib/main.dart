@@ -20,10 +20,9 @@ Future<File> openLogFile() async {
 late Logger logger;
 
 void showLog() {
-  logger.i('Time=${DateTime.now()}');
-  logger.i('directory = $logFilePath');
+  logger.i('log file = $logFilePath');
 
-  logger.d('Log message with 2 methods');
+  logger.d('This is a debug message test');
 
   // loggerNoStack.i('Info message');
 
