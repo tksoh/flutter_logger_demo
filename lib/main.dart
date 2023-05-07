@@ -90,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(kDebugMode ? 'Dev mode' : 'Prod mode'),
+            const Text(kDebugMode ? 'Debug mode' : 'Release mode'),
             Text('path: $logFilePath'),
             const SizedBox(height: 10),
             const Text(
