@@ -15,7 +15,9 @@ class PlainLogPrinter extends LogPrinter {
   @override
   List<String> log(LogEvent event) {
     final evtime = dateFormat.format(event.time);
-    var output = StringBuffer('$evtime [${levelPrefixes[event.level]}]:');
+    final level = levelPrefixes[event.level] ?? '<undef>';
+
+    var output = StringBuffer('$evtime [$level]');
     if (event.message is String) {
       output.write(' ${event.message}');
     } else if (event.message is Map) {
