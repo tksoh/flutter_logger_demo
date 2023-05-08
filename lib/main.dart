@@ -87,11 +87,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 IconButton(
                   onPressed: () async {
-                    clearLogFiles();
+                    purgeLogFiles();
                   },
-                  tooltip: 'Delete all log files',
+                  tooltip: 'Delete old log files',
                   icon: const Icon(
-                    Icons.delete_outline,
+                    Icons.cleaning_services,
                     size: 16,
                     color: Colors.blue,
                   ),

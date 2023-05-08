@@ -31,13 +31,22 @@ Future<String> getLogFolderPath() async {
   return logFolderPath;
 }
 
-Future<void> clearLogFiles() async {
+Future<void> purgeLogFiles() async {
   final logFolderPath = await getLogFolderPath();
   final dir = Directory(logFolderPath);
-  try {
-    dir.deleteSync(recursive: true);
-  } on FileSystemException catch (e) {
-    debugPrint('$e');
+
+  // delete all log files except current one in use
+  final files = dir.listSync();
+  for (final f in files) {
+    if (f.path == logFilePath) {
+      continue; // skip active log file
+    }
+
+    try {
+      f.deleteSync();
+    } on FileSystemException catch (e) {
+      logger.e('Error deleting $f: $e');
+    }
   }
 }
 
@@ -48,5 +57,10 @@ Future<File> openLogFile() async {
   final path = '$dir/$filename';
   logFilePath = path;
   final logfile = File(path);
+
+  // tmp file for testing log files purging
+  final tmpFile = File('$dir/$filename.tmp');
+  tmpFile.writeAsStringSync('test contents\n');
+
   return logfile;
 }
