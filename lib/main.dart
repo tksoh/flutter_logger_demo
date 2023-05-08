@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -70,28 +71,64 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final title =
+        kDebugMode ? '${widget.title} [Debug]' : '${widget.title} [Release]';
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(title),
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(kDebugMode ? 'Debug mode' : 'Release mode'),
-            Text('path: $logFilePath'),
-            const SizedBox(height: 10),
-            const Text(
-              'You have pushed the button this many times:',
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: SelectableText(
+                      logFilePath,
+                      style: const TextStyle(
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ),
+                ),
+                IconButton(
+                  onPressed: () async {
+                    await Clipboard.setData(ClipboardData(text: logFilePath));
+                  },
+                  tooltip: 'Copy log file path',
+                  icon: const Icon(
+                    Icons.copy,
+                    size: 14,
+                  ),
+                ),
+                IconButton(
+                  onPressed: Platform.isWindows ? null : shareLog,
+                  tooltip: 'share log file',
+                  icon: const Icon(
+                    Icons.share,
+                    size: 14,
+                  ),
+                ),
+              ],
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
             const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: Platform.isWindows ? null : shareLog,
-              child: const Text('Share Log File'),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  const Text(
+                    'You have pushed the button this many times:',
+                  ),
+                  Text(
+                    '$_counter',
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                ],
+              ),
             ),
           ],
         ),
