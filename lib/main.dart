@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -8,11 +9,32 @@ import 'package:share_plus/share_plus.dart';
 
 import 'plain_printer.dart';
 
+const logFolder = 'logs';
+
 late String logFilePath;
 
+Future<String> getLogFolderPath() async {
+  final tmpdir = await getTemporaryDirectory();
+  final logFolderPath = '${tmpdir.path}/$logFolder';
+  await Directory(logFolderPath).create(recursive: true);
+  return logFolderPath;
+}
+
+Future<void> clearLogFiles() async {
+  final logFolderPath = await getLogFolderPath();
+  final dir = Directory(logFolderPath);
+  try {
+    dir.deleteSync(recursive: true);
+  } on FileSystemException catch (e) {
+    debugPrint('$e');
+  }
+}
+
 Future<File> openLogFile() async {
-  final dir = await getTemporaryDirectory();
-  final path = '${dir.path}/test1_log.txt';
+  final dir = await getLogFolderPath();
+  final timeCode = DateFormat('yyyyMMdd').format(DateTime.now());
+  final filename = 'Log_$timeCode.txt';
+  final path = '$dir/$filename';
   logFilePath = path;
   final logfile = File(path);
   return logfile;
@@ -103,16 +125,31 @@ class _MyHomePageState extends State<MyHomePage> {
                   icon: const Icon(
                     Icons.copy,
                     size: 14,
+                    color: Colors.blue,
                   ),
                 ),
                 IconButton(
-                  onPressed: Platform.isWindows ? null : shareLog,
-                  tooltip: 'share log file',
+                  onPressed: () async {
+                    clearLogFiles();
+                  },
+                  tooltip: 'Delete all log files',
                   icon: const Icon(
-                    Icons.share,
-                    size: 14,
+                    Icons.delete_outline,
+                    size: 16,
+                    color: Colors.blue,
                   ),
                 ),
+                Platform.isWindows
+                    ? Container()
+                    : IconButton(
+                        onPressed: Platform.isWindows ? null : shareLog,
+                        tooltip: 'share log file',
+                        icon: const Icon(
+                          Icons.share,
+                          size: 14,
+                          color: Colors.blue,
+                        ),
+                      ),
               ],
             ),
             const SizedBox(height: 10),
