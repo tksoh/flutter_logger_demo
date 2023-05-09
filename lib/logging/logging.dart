@@ -16,6 +16,8 @@ late String logFilePath;
 
 late Logger logger;
 
+final _logFilter = kDebugMode ? DevelopmentFilter() : ProductionFilter();
+
 Future<void> createLogger() async {
   logger = Logger(
     printer: PlainLogPrinter(),
@@ -23,8 +25,14 @@ Future<void> createLogger() async {
       if (kDebugMode) ConsoleOutput(),
       FileOutput(file: await openLogFile()),
     ]),
-    filter: kDebugMode ? DevelopmentFilter() : ProductionFilter(),
+    filter: _logFilter,
   );
+}
+
+Level? setFilterLevel(Level level) {
+  final curLevel = _logFilter.level;
+  _logFilter.level = level;
+  return curLevel;
 }
 
 Future<String> getLogFolderPath() async {
