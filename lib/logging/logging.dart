@@ -4,10 +4,13 @@ import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 
 import 'plain_printer.dart';
 
-const logFolder = 'logs';
+const logFolderName = 'logs';
+
+late String logFolderPath;
 
 late String logFilePath;
 
@@ -26,13 +29,12 @@ Future<void> createLogger() async {
 
 Future<String> getLogFolderPath() async {
   final tmpdir = await getTemporaryDirectory();
-  final logFolderPath = '${tmpdir.path}/$logFolder';
+  logFolderPath = p.join(tmpdir.path, logFolderName);
   await Directory(logFolderPath).create(recursive: true);
   return logFolderPath;
 }
 
 Future<void> purgeLogFiles() async {
-  final logFolderPath = await getLogFolderPath();
   final dir = Directory(logFolderPath);
 
   // delete all log files except current one in use
@@ -54,7 +56,7 @@ Future<File> openLogFile() async {
   final dir = await getLogFolderPath();
   final timeCode = DateFormat('yyyyMMdd').format(DateTime.now());
   final filename = 'Log_$timeCode.txt';
-  final path = '$dir/$filename';
+  final path = p.join(dir, filename); //'$dir/$filename';
   logFilePath = path;
   final logfile = File(path);
 
