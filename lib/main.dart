@@ -2,13 +2,14 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:share_plus/share_plus.dart';
 
 import 'logging/logging.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await createLogger();
+  await Logging.initialize();
   runApp(const MyApp());
 }
 
@@ -53,6 +54,10 @@ class _MyHomePageState extends State<MyHomePage> {
     final title =
         kDebugMode ? '${widget.title} [Debug]' : '${widget.title} [Release]';
 
+    final logIcon = logger.level == null || logger.level != Level.nothing
+        ? Icons.pause
+        : Icons.play_arrow;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
@@ -67,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: SelectableText(
-                      logFilePath,
+                      Logging.logFilePath,
                       style: const TextStyle(
                         color: Colors.blue,
                       ),
@@ -76,7 +81,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 IconButton(
                   onPressed: () async {
-                    await Clipboard.setData(ClipboardData(text: logFilePath));
+                    await Clipboard.setData(
+                        ClipboardData(text: Logging.logFilePath));
                   },
                   tooltip: 'Copy log file path',
                   icon: const Icon(
@@ -87,11 +93,26 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 IconButton(
                   onPressed: () async {
-                    purgeLogFiles();
+                    Logging.purgeLogFiles();
                   },
                   tooltip: 'Delete old log files',
                   icon: const Icon(
                     Icons.cleaning_services,
+                    size: 16,
+                    color: Colors.blue,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () async {
+                    setState(() {
+                      logger.setLevel(logIcon == Icons.pause
+                          ? Level.nothing
+                          : Logger.level);
+                    });
+                  },
+                  tooltip: 'Suspend logging',
+                  icon: Icon(
+                    logIcon,
                     size: 16,
                     color: Colors.blue,
                   ),
@@ -136,12 +157,12 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void addLog() {
-    logger.i('log file = $logFilePath');
+    logger.i('log file = ${Logging.logFilePath}');
     logger.d('Counter = $_counter');
   }
 
   shareLog() {
     // ignore: deprecated_member_use
-    Share.shareFiles([logFilePath], text: 'log data');
+    Share.shareFiles([Logging.logFilePath], text: 'log data');
   }
 }
