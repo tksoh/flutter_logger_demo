@@ -18,7 +18,7 @@ class Logging {
   static String get path => _logFile.path;
 
   static Future<void> initialize() async {
-    _logFile = await openLogFile();
+    _logFile = await _openLogFile();
 
     logger = Logger(
       printer: PlainLogPrinter(),
@@ -34,13 +34,6 @@ class Logging {
     final curLevel = _logFilter.level;
     _logFilter.level = level;
     return curLevel;
-  }
-
-  static Future<String> getLogFolderPath() async {
-    final tmpdir = await getTemporaryDirectory();
-    final logPath = p.join(tmpdir.path, _logFolderName);
-    await Directory(logPath).create(recursive: true);
-    return logPath;
   }
 
   static Future<void> purgeLogFiles() async {
@@ -59,16 +52,20 @@ class Logging {
     }
   }
 
-  static Future<File> openLogFile() async {
-    final dir = await getLogFolderPath();
+  static Future<File> _openLogFile() async {
+    final tmpdir = await getTemporaryDirectory();
+    final logDir = p.join(tmpdir.path, _logFolderName);
     final timeCode = DateFormat('yyyyMMdd').format(DateTime.now());
     final filename = 'Log_$timeCode.txt';
 
+    // create folder for log files
+    await Directory(logDir).create(recursive: true);
+
     // tmp file for testing log files purging
     final tmpFileName = '$filename.tmp';
-    final tmpFile = File(p.join(dir, tmpFileName));
+    final tmpFile = File(p.join(logDir, tmpFileName));
     tmpFile.writeAsStringSync('test contents\n');
 
-    return File(p.join(dir, filename));
+    return File(p.join(logDir, filename));
   }
 }
