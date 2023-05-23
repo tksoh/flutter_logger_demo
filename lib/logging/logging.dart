@@ -17,6 +17,8 @@ class Logging {
 
   static String get path => _logFile.path;
 
+  static String get folder => _logFile.parent.path;
+
   Logging._(); // Logging is just a wrapper class
 
   static Future<void> initialize() async {

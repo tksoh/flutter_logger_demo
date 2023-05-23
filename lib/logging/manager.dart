@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:logger_demo/logging/logging.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LogManager extends StatefulWidget {
   const LogManager({super.key});
@@ -29,12 +30,17 @@ class _LogManagerState extends State<LogManager> {
           children: [
             Row(
               children: [
-                buildIconButton(
-                  icon: Icons.share,
-                  size: 36,
-                  onPressed: shareSelectedFiles,
-                  enabled: !Platform.isWindows,
-                ),
+                Platform.isWindows
+                    ? buildIconButton(
+                        icon: Icons.description,
+                        size: 36,
+                        onPressed: openSelectedFiles,
+                      )
+                    : buildIconButton(
+                        icon: Icons.share,
+                        size: 36,
+                        onPressed: shareSelectedFiles,
+                      ),
                 buildIconButton(
                   icon: Icons.delete,
                   size: 36,
@@ -50,20 +56,23 @@ class _LogManagerState extends State<LogManager> {
                 itemBuilder: (BuildContext context, int index) {
                   final logFile = logFiles[index];
                   final isSelected = selectedFiles.contains(logFile);
-                  return ListTile(
-                    leading: Text('$index'),
-                    title: Text(logFile),
-                    trailing: Checkbox(
-                      value: isSelected,
-                      onChanged: (value) {
-                        setState(() {
-                          if (value!) {
-                            selectedFiles.add(logFile);
-                          } else {
-                            selectedFiles.remove(logFile);
-                          }
-                        });
-                      },
+                  return GestureDetector(
+                    onDoubleTap: () => openFile(logFile),
+                    child: ListTile(
+                      leading: Text('$index'),
+                      title: Text(logFile),
+                      trailing: Checkbox(
+                        value: isSelected,
+                        onChanged: (value) {
+                          setState(() {
+                            if (value!) {
+                              selectedFiles.add(logFile);
+                            } else {
+                              selectedFiles.remove(logFile);
+                            }
+                          });
+                        },
+                      ),
                     ),
                   );
                 },
@@ -86,6 +95,26 @@ class _LogManagerState extends State<LogManager> {
 
   void deleteSelectedFiles() {
     //
+  }
+
+  void openLogFileFolder() {
+    if (!Platform.isWindows) return;
+
+    final url = Uri.parse(Logging.folder);
+    launchUrl(url);
+  }
+
+  void openSelectedFiles() {
+    for (final f in selectedFiles) {
+      openFile(f);
+    }
+  }
+
+  void openFile(String path) {
+    if (!Platform.isWindows) return;
+
+    final url = Uri.parse(path);
+    launchUrl(url);
   }
 }
 
