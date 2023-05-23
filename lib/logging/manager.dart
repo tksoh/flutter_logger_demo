@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:logger_demo/logging/logging.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:path/path.dart' as p;
 
 class LogManager extends StatefulWidget {
   const LogManager({super.key});
@@ -62,11 +63,13 @@ class _LogManagerState extends State<LogManager> {
                 itemBuilder: (BuildContext context, int index) {
                   final logFile = logFiles[index];
                   final isSelected = selectedFiles.contains(logFile);
+                  final fname = p.basename(logFile);
+
                   return GestureDetector(
                     onDoubleTap: () => openFile(logFile),
                     child: ListTile(
                       leading: Text('$index'),
-                      title: Text(logFile),
+                      title: Text(fname),
                       trailing: Checkbox(
                         value: isSelected,
                         onChanged: (value) {
