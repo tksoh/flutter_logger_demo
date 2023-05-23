@@ -53,6 +53,25 @@ class _LogManagerState extends State<LogManager> {
                   tooltip: 'Delete selected files',
                   enabled: selectedFiles.isNotEmpty,
                 ),
+                const Spacer(),
+                Checkbox(
+                  tristate: true,
+                  value: selectedFiles.length == logFiles.length
+                      ? true
+                      : selectedFiles.isNotEmpty
+                          ? null
+                          : false,
+                  onChanged: (value) {
+                    if (value == null || value == false) {
+                      selectedFiles.clear();
+                    } else {
+                      selectedFiles.clear();
+                      selectedFiles.addAll(logFiles);
+                    }
+                    setState(() {});
+                  },
+                ),
+                const SizedBox(width: 15),
               ],
             ),
             Expanded(
