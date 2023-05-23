@@ -38,6 +38,11 @@ class Logging {
     return curLevel;
   }
 
+  static List<String> getLogFiles() {
+    final files = _logFile.parent.listSync().map((f) => f.path).toList();
+    return files;
+  }
+
   static Future<void> purgeLogFiles() async {
     // delete all log files except current one in use
     final files = _logFile.parent.listSync();

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:logger_demo/logging/manager.dart';
 import 'package:share_plus/share_plus.dart';
 
 import 'logging/logging.dart';
@@ -81,6 +82,21 @@ class _MyHomePageState extends State<MyHomePage> {
                   tooltip: 'Copy log file path',
                   icon: const Icon(
                     Icons.copy,
+                    size: 14,
+                    color: Colors.blue,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () async {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (BuildContext context) => const LogManager(),
+                      ),
+                    );
+                  },
+                  tooltip: 'Log file manager',
+                  icon: const Icon(
+                    Icons.folder,
                     size: 14,
                     color: Colors.blue,
                   ),
