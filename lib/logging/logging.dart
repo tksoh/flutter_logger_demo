@@ -70,11 +70,6 @@ class Logging {
     // create folder for log files
     await Directory(logDir).create(recursive: true);
 
-    // tmp file for testing log files purging
-    final tmpFileName = '$filename.tmp';
-    final tmpFile = File(p.join(logDir, tmpFileName));
-    tmpFile.writeAsStringSync('test contents\n');
-
     return File(p.join(logDir, filename));
   }
 }
