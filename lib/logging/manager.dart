@@ -36,18 +36,21 @@ class _LogManagerState extends State<LogManager> {
                         size: 36,
                         onPressed: openSelectedFiles,
                         tooltip: 'Open selected files',
+                        enabled: selectedFiles.isNotEmpty,
                       )
                     : buildIconButton(
                         icon: Icons.share,
                         size: 36,
                         onPressed: shareSelectedFiles,
                         tooltip: 'Shared selected files',
+                        enabled: selectedFiles.isNotEmpty,
                       ),
                 buildIconButton(
                   icon: Icons.delete,
                   size: 36,
                   onPressed: deleteSelectedFiles,
                   tooltip: 'Delete selected files',
+                  enabled: selectedFiles.isNotEmpty,
                 ),
               ],
             ),
