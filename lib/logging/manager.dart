@@ -35,16 +35,19 @@ class _LogManagerState extends State<LogManager> {
                         icon: Icons.description,
                         size: 36,
                         onPressed: openSelectedFiles,
+                        tooltip: 'Open selected files',
                       )
                     : buildIconButton(
                         icon: Icons.share,
                         size: 36,
                         onPressed: shareSelectedFiles,
+                        tooltip: 'Shared selected files',
                       ),
                 buildIconButton(
                   icon: Icons.delete,
                   size: 36,
                   onPressed: deleteSelectedFiles,
+                  tooltip: 'Delete selected files',
                 ),
               ],
             ),
@@ -122,21 +125,25 @@ Padding buildIconButton({
   required IconData icon,
   VoidCallback? onPressed,
   double size = 48,
-  enabled = true,
+  bool enabled = true,
+  String tooltip = '',
 }) {
   return Padding(
     padding: const EdgeInsets.all(4.0),
     child: SizedBox.square(
       dimension: size,
-      child: ElevatedButton(
-        onPressed: enabled ? onPressed : null,
-        style: ElevatedButton.styleFrom(
-          shape: const CircleBorder(),
-          padding: const EdgeInsets.all(5),
-          backgroundColor: Colors.blue, // <-- Button color
-          // foregroundColor: Colors.red, // <-- Splash color
+      child: Tooltip(
+        message: tooltip,
+        child: ElevatedButton(
+          onPressed: enabled ? onPressed : null,
+          style: ElevatedButton.styleFrom(
+            shape: const CircleBorder(),
+            padding: const EdgeInsets.all(5),
+            backgroundColor: Colors.blue, // <-- Button color
+            // foregroundColor: Colors.red, // <-- Splash color
+          ),
+          child: Icon(icon),
         ),
-        child: Icon(icon),
       ),
     ),
   );
