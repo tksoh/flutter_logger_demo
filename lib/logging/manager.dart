@@ -83,12 +83,24 @@ class _LogManagerState extends State<LogManager> {
                   final logFile = logFiles[index];
                   final isSelected = selectedFiles.contains(logFile);
                   final fname = p.basename(logFile);
+                  final isActiveFile = logFile == Logging.path;
 
                   return GestureDetector(
                     onDoubleTap: () => openFile(logFile),
                     child: ListTile(
                       leading: Text('${index + 1}'),
-                      title: Text(fname),
+                      title: Text(
+                        fname,
+                      ),
+                      subtitle: isActiveFile
+                          ? const Text(
+                              '(active)',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.red,
+                              ),
+                            )
+                          : null,
                       trailing: Checkbox(
                         value: isSelected,
                         onChanged: (value) {
