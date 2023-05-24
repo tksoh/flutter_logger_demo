@@ -41,6 +41,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   int _counter = 0;
   final start = DateTime.now();
+  bool exitingApp = false;
 
   @override
   void initState() {
@@ -62,7 +63,13 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     switch (state) {
       case AppLifecycleState.inactive:
       case AppLifecycleState.detached:
+        return;
       case AppLifecycleState.paused:
+        // if app paused is trigger by app exit, logger somehow fails to
+        // flush the newline of log message, so we add one as temp fix
+        final msg =
+            exitingApp ? 'app paused (exit)\n' : 'app paused (background)';
+        logger.d(msg);
         return;
       case AppLifecycleState.resumed:
         logger.d('app resumed');
@@ -86,96 +93,107 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       appBar: AppBar(
         title: Text(title),
       ),
-      body: Center(
-        child: Column(
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: SelectableText(
-                      Logging.path,
-                      style: const TextStyle(
-                        color: Colors.blue,
-                      ),
-                    ),
-                  ),
-                ),
-                IconButton(
-                  onPressed: () async {
-                    await Clipboard.setData(ClipboardData(text: Logging.path));
-                  },
-                  tooltip: 'Copy log file path',
-                  icon: const Icon(
-                    Icons.copy,
-                    size: 14,
-                    color: Colors.blue,
-                  ),
-                ),
-                IconButton(
-                  onPressed: () async {
-                    Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (BuildContext context) => const LogManager(),
-                      ),
-                    );
-                  },
-                  tooltip: 'Log file manager',
-                  icon: const Icon(
-                    Icons.folder,
-                    size: 14,
-                    color: Colors.blue,
-                  ),
-                ),
-                IconButton(
-                  onPressed: () async {
-                    Logging.purgeLogFiles();
-                  },
-                  tooltip: 'Delete old log files',
-                  icon: const Icon(
-                    Icons.cleaning_services,
-                    size: 16,
-                    color: Colors.blue,
-                  ),
-                ),
-                Platform.isWindows
-                    ? Container()
-                    : IconButton(
-                        onPressed: Platform.isWindows ? null : shareLog,
-                        tooltip: 'share log file',
-                        icon: const Icon(
-                          Icons.share,
-                          size: 14,
-                          color: Colors.blue,
-                        ),
-                      ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  const Text(
-                    'You have pushed the button this many times:',
-                  ),
-                  Text(
-                    '$_counter',
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+      body: WillPopScope(
+        onWillPop: () async {
+          logger.d('exiting app');
+          exitingApp = true;
+          return true;
+        },
+        child: buildScaffoldBody(context),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  Widget buildScaffoldBody(BuildContext context) {
+    return Center(
+      child: Column(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SelectableText(
+                    Logging.path,
+                    style: const TextStyle(
+                      color: Colors.blue,
+                    ),
+                  ),
+                ),
+              ),
+              IconButton(
+                onPressed: () async {
+                  await Clipboard.setData(ClipboardData(text: Logging.path));
+                },
+                tooltip: 'Copy log file path',
+                icon: const Icon(
+                  Icons.copy,
+                  size: 14,
+                  color: Colors.blue,
+                ),
+              ),
+              IconButton(
+                onPressed: () async {
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (BuildContext context) => const LogManager(),
+                    ),
+                  );
+                },
+                tooltip: 'Log file manager',
+                icon: const Icon(
+                  Icons.folder,
+                  size: 14,
+                  color: Colors.blue,
+                ),
+              ),
+              IconButton(
+                onPressed: () async {
+                  Logging.purgeLogFiles();
+                },
+                tooltip: 'Delete old log files',
+                icon: const Icon(
+                  Icons.cleaning_services,
+                  size: 16,
+                  color: Colors.blue,
+                ),
+              ),
+              Platform.isWindows
+                  ? Container()
+                  : IconButton(
+                      onPressed: Platform.isWindows ? null : shareLog,
+                      tooltip: 'share log file',
+                      icon: const Icon(
+                        Icons.share,
+                        size: 14,
+                        color: Colors.blue,
+                      ),
+                    ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                const Text(
+                  'You have pushed the button this many times:',
+                ),
+                Text(
+                  '$_counter',
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
