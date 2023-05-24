@@ -133,8 +133,29 @@ class _LogManagerState extends State<LogManager> {
     Share.shareFiles(selectedFiles, text: 'log data');
   }
 
-  void deleteSelectedFiles() {
-    //
+  void deleteSelectedFiles() async {
+    final status = await showComfirmDialog(
+        'Deleten Log Files', 'Do you want to selected log files');
+    if (status != 'YES') {
+      return;
+    }
+
+    for (final f in selectedFiles) {
+      if (f == Logging.path) {
+        continue; // skip active log file
+      }
+
+      try {
+        File(f).deleteSync();
+      } on FileSystemException catch (e) {
+        logger.e('Error deleting $f: $e');
+      }
+    }
+
+    setState(() {
+      selectedFiles.clear();
+      logFiles = getLogFiles();
+    });
   }
 
   void openLogFileFolder() {
@@ -155,6 +176,48 @@ class _LogManagerState extends State<LogManager> {
 
     final url = Uri.parse(path);
     launchUrl(url);
+  }
+
+  Future<String> showComfirmDialog(String title, String content) async {
+    final resp = await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => buildConfirmDialog(
+          Text(
+            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(content)),
+    );
+
+    return resp ?? '';
+  }
+
+  Widget buildConfirmDialog(Widget title, Widget content) {
+    return AlertDialog(
+      title: title,
+      content: content,
+      actions: [
+        TextButton(
+            child: const Text(
+              'NO',
+              style: TextStyle(color: Colors.black),
+            ),
+            onPressed: () {
+              Navigator.of(context).pop('NO');
+            }),
+        TextButton(
+            child: const Text(
+              'YES',
+              style: TextStyle(color: Colors.black),
+            ),
+            onPressed: () {
+              Navigator.of(context).pop('YES');
+            }),
+      ],
+    );
   }
 }
 
