@@ -87,7 +87,7 @@ class _LogManagerState extends State<LogManager> {
                   return GestureDetector(
                     onDoubleTap: () => openFile(logFile),
                     child: ListTile(
-                      leading: Text('$index'),
+                      leading: Text('${index + 1}'),
                       title: Text(fname),
                       trailing: Checkbox(
                         value: isSelected,
