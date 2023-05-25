@@ -1,10 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:logger_demo/logging/logging.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:path/path.dart' as p;
+
+import 'logging.dart';
 
 class LogManager extends StatefulWidget {
   const LogManager({super.key});
@@ -152,7 +153,7 @@ class _LogManagerState extends State<LogManager> {
 
   void deleteSelectedFiles() async {
     final status = await showComfirmDialog(
-        'Deleten Log Files', 'Do you want to selected log files');
+        'Deleten Log Files', 'Do you want to selected log files?');
     if (status != 'YES') {
       return;
     }
