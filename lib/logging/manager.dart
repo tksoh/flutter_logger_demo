@@ -26,100 +26,117 @@ class _LogManagerState extends State<LogManager> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('Log Files')),
-        body: Column(
-          children: [
-            Row(
-              children: [
-                Platform.isWindows
-                    ? buildIconButton(
-                        icon: Icons.description,
-                        size: 36,
-                        onPressed: openSelectedFiles,
-                        tooltip: 'Open selected files',
-                        enabled: selectedFiles.isNotEmpty,
-                      )
-                    : buildIconButton(
-                        icon: Icons.share,
-                        size: 36,
-                        onPressed: shareSelectedFiles,
-                        tooltip: 'Shared selected files',
-                        enabled: selectedFiles.isNotEmpty,
-                      ),
-                buildIconButton(
-                  icon: Icons.delete,
-                  size: 36,
-                  onPressed: deleteSelectedFiles,
-                  tooltip: 'Delete selected files',
-                  enabled: selectedFiles.isNotEmpty,
-                ),
-                const Spacer(),
-                Checkbox(
-                  tristate: true,
-                  value: selectedFiles.length == logFiles.length
-                      ? true
-                      : selectedFiles.isNotEmpty
-                          ? null
-                          : false,
-                  onChanged: (value) {
-                    if (value == null || value == false) {
-                      selectedFiles.clear();
-                    } else {
-                      selectedFiles.clear();
-                      selectedFiles.addAll(logFiles);
-                    }
-                    setState(() {});
-                  },
-                ),
-                const SizedBox(width: 15),
-              ],
-            ),
-            Expanded(
-              child: ListView.separated(
-                itemCount: logFiles.length,
-                separatorBuilder: (BuildContext context, int index) =>
-                    const Divider(),
-                itemBuilder: (BuildContext context, int index) {
-                  final logFile = logFiles[index];
-                  final isSelected = selectedFiles.contains(logFile);
-                  final fname = p.basename(logFile);
-                  final isActiveFile = logFile == Logging.path;
+      appBar: AppBar(title: const Text('Log Files')),
+      body: buildBody(),
+    );
+  }
 
-                  return GestureDetector(
-                    onDoubleTap: () => openFile(logFile),
-                    child: ListTile(
-                      leading: Text('${index + 1}'),
-                      title: Text(
-                        fname,
-                      ),
-                      subtitle: isActiveFile
-                          ? const Text(
-                              '(active)',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.red,
-                              ),
-                            )
-                          : null,
-                      trailing: Checkbox(
-                        value: isSelected,
-                        onChanged: (value) {
-                          setState(() {
-                            if (value!) {
-                              selectedFiles.add(logFile);
-                            } else {
-                              selectedFiles.remove(logFile);
-                            }
-                          });
-                        },
-                      ),
-                    ),
-                  );
-                },
+  Widget buildBody() {
+    return Column(
+      children: [
+        buildActionBar(),
+        Expanded(
+          child: buildFileListView(),
+        ),
+      ],
+    );
+  }
+
+  Widget buildActionBar() {
+    final checkBoxState = selectedFiles.length == logFiles.length
+        ? true
+        : selectedFiles.isEmpty
+            ? false
+            : null;
+
+    return Row(
+      children: [
+        Platform.isWindows
+            ? buildIconButton(
+                icon: Icons.description,
+                size: 36,
+                onPressed: openSelectedFiles,
+                tooltip: 'Open selected files',
+                enabled: selectedFiles.isNotEmpty,
+              )
+            : buildIconButton(
+                icon: Icons.share,
+                size: 36,
+                onPressed: shareSelectedFiles,
+                tooltip: 'Shared selected files',
+                enabled: selectedFiles.isNotEmpty,
               ),
-            ),
-          ],
-        ));
+        buildIconButton(
+          icon: Icons.delete,
+          size: 36,
+          onPressed: deleteSelectedFiles,
+          tooltip: 'Delete selected files',
+          enabled: selectedFiles.isNotEmpty,
+        ),
+        const Spacer(),
+        Checkbox(
+          tristate: true,
+          value: checkBoxState,
+          onChanged: (value) {
+            if (value == null || value == false) {
+              selectedFiles.clear();
+            } else {
+              selectedFiles.clear();
+              selectedFiles.addAll(logFiles);
+            }
+            setState(() {});
+          },
+        ),
+        const SizedBox(width: 15),
+      ],
+    );
+  }
+
+  Widget buildFileListView() {
+    return ListView.separated(
+        itemCount: logFiles.length,
+        separatorBuilder: (BuildContext context, int index) => const Divider(),
+        itemBuilder: (BuildContext context, int index) {
+          return buildLogFileListItem(index);
+        });
+  }
+
+  Widget buildLogFileListItem(int index) {
+    final logFile = logFiles[index];
+    final isSelected = selectedFiles.contains(logFile);
+    final fname = p.basename(logFile);
+    final isActiveFile = logFile == Logging.path;
+
+    return GestureDetector(
+      onDoubleTap: () => openFile(logFile),
+      child: ListTile(
+        leading: Text('${index + 1}'),
+        title: Text(
+          fname,
+        ),
+        subtitle: isActiveFile
+            ? const Text(
+                '(active)',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red,
+                ),
+              )
+            : null,
+        trailing: Checkbox(
+          value: isSelected,
+          onChanged: (value) {
+            setState(() {
+              if (value!) {
+                selectedFiles.add(logFile);
+              } else {
+                selectedFiles.remove(logFile);
+              }
+            });
+          },
+        ),
+      ),
+    );
   }
 
   List<String> getLogFiles() {
