@@ -177,6 +177,7 @@ class LogManager2State extends LogManagerState<LogManager2> {
         icon: Icons.upload,
         onPressed: uploadSelectedFiles,
         enabled: selectedFiles.isNotEmpty,
+        tooltip: 'Upload selected files',
       ),
     ];
   }
