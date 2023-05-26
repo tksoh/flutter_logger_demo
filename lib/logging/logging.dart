@@ -26,10 +26,12 @@ class Logging {
 
     logger = Logger(
       printer: PlainLogPrinter(),
-      output: MultiOutput([
-        if (kDebugMode) ConsoleOutput(),
-        FileOutput(file: _logFile),
-      ]),
+      output: kDebugMode
+          ? MultiOutput([
+              FileOutput(file: _logFile),
+              ConsoleOutput(),
+            ])
+          : FileOutput(file: _logFile),
       filter: _logFilter,
     );
   }
