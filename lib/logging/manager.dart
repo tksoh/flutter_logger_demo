@@ -121,7 +121,8 @@ class LogManagerState<T extends StatefulWidget> extends State<T> {
   }
 
   List<String> getLogFiles() {
-    return Logging.getLogFiles();
+    final list = Logging.getLogFiles()..sort();
+    return list.reversed.toList();
   }
 
   void shareSelectedFiles() {
