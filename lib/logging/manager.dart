@@ -11,10 +11,10 @@ class LogManager extends StatefulWidget {
   const LogManager({super.key});
 
   @override
-  State<LogManager> createState() => _LogManagerState();
+  State<LogManager> createState() => LogManagerState();
 }
 
-class _LogManagerState extends State<LogManager> {
+class LogManagerState<T extends StatefulWidget> extends State<T> {
   List<String> logFiles = [];
   List<String> selectedFiles = [];
 
@@ -52,28 +52,8 @@ class _LogManagerState extends State<LogManager> {
 
     return Row(
       children: [
-        Platform.isWindows
-            ? buildIconButton(
-                icon: Icons.description,
-                size: 36,
-                onPressed: openSelectedFiles,
-                tooltip: 'Open selected files',
-                enabled: selectedFiles.isNotEmpty,
-              )
-            : buildIconButton(
-                icon: Icons.share,
-                size: 36,
-                onPressed: shareSelectedFiles,
-                tooltip: 'Shared selected files',
-                enabled: selectedFiles.isNotEmpty,
-              ),
-        buildIconButton(
-          icon: Icons.delete,
-          size: 36,
-          onPressed: deleteSelectedFiles,
-          tooltip: 'Delete selected files',
-          enabled: selectedFiles.isNotEmpty,
-        ),
+        ...getDefaultActions(),
+        ...getCustomActions(),
         const Spacer(),
         Checkbox(
           tristate: true,
@@ -236,6 +216,37 @@ class _LogManagerState extends State<LogManager> {
             }),
       ],
     );
+  }
+
+  List<Widget> getDefaultActions() {
+    return [
+      Platform.isWindows
+          ? buildIconButton(
+              icon: Icons.description,
+              size: 36,
+              onPressed: openSelectedFiles,
+              tooltip: 'Open selected files',
+              enabled: selectedFiles.isNotEmpty,
+            )
+          : buildIconButton(
+              icon: Icons.share,
+              size: 36,
+              onPressed: shareSelectedFiles,
+              tooltip: 'Shared selected files',
+              enabled: selectedFiles.isNotEmpty,
+            ),
+      buildIconButton(
+        icon: Icons.delete,
+        size: 36,
+        onPressed: deleteSelectedFiles,
+        tooltip: 'Delete selected files',
+        enabled: selectedFiles.isNotEmpty,
+      )
+    ];
+  }
+
+  List<Widget> getCustomActions() {
+    return [];
   }
 }
 

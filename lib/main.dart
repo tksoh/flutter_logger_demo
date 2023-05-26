@@ -90,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   onPressed: () async {
                     Navigator.of(context).push(
                       MaterialPageRoute<void>(
-                        builder: (BuildContext context) => const LogManager(),
+                        builder: (BuildContext context) => const LogManager2(),
                       ),
                     );
                   },
@@ -159,5 +159,31 @@ class _MyHomePageState extends State<MyHomePage> {
   shareLog() {
     // ignore: deprecated_member_use
     Share.shareFiles([Logging.path], text: 'log data');
+  }
+}
+
+class LogManager2 extends LogManager {
+  const LogManager2({super.key});
+
+  @override
+  State<LogManager2> createState() => LogManager2State();
+}
+
+class LogManager2State extends LogManagerState<LogManager2> {
+  @override
+  List<Widget> getCustomActions() {
+    return [
+      buildIconButton(
+        icon: Icons.upload,
+        size: 36,
+        onPressed: uploadSelectedFiles,
+        enabled: selectedFiles.isNotEmpty,
+      ),
+    ];
+  }
+
+  void uploadSelectedFiles() {
+    if (selectedFiles.isEmpty) return;
+    logger.d('uploading: $selectedFiles');
   }
 }
