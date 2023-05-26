@@ -223,21 +223,18 @@ class LogManagerState<T extends StatefulWidget> extends State<T> {
       Platform.isWindows
           ? buildIconButton(
               icon: Icons.description,
-              size: 36,
               onPressed: openSelectedFiles,
               tooltip: 'Open selected files',
               enabled: selectedFiles.isNotEmpty,
             )
           : buildIconButton(
               icon: Icons.share,
-              size: 36,
               onPressed: shareSelectedFiles,
               tooltip: 'Shared selected files',
               enabled: selectedFiles.isNotEmpty,
             ),
       buildIconButton(
         icon: Icons.delete,
-        size: 36,
         onPressed: deleteSelectedFiles,
         tooltip: 'Delete selected files',
         enabled: selectedFiles.isNotEmpty,
@@ -253,7 +250,7 @@ class LogManagerState<T extends StatefulWidget> extends State<T> {
 Padding buildIconButton({
   required IconData icon,
   VoidCallback? onPressed,
-  double size = 48,
+  double size = 36,
   bool enabled = true,
   String tooltip = '',
 }) {

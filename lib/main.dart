@@ -175,7 +175,6 @@ class LogManager2State extends LogManagerState<LogManager2> {
     return [
       buildIconButton(
         icon: Icons.upload,
-        size: 36,
         onPressed: uploadSelectedFiles,
         enabled: selectedFiles.isNotEmpty,
       ),
