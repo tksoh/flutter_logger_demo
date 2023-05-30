@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:path/path.dart' as p;
@@ -15,8 +16,10 @@ class LogManager extends StatefulWidget {
 }
 
 class LogManagerState<T extends StatefulWidget> extends State<T> {
+  final formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
   List<String> logFiles = [];
   List<String> selectedFiles = [];
+  Map<String, FileStat> fileStats = {};
 
   @override
   void initState() {
@@ -87,23 +90,27 @@ class LogManagerState<T extends StatefulWidget> extends State<T> {
     final isSelected = selectedFiles.contains(logFile);
     final fname = p.basename(logFile);
     final isActiveFile = logFile == Logging.path;
+    final stat = fileStats[logFile];
+    final fdate = formatter.format(stat!.modified);
+    final fsize = (stat.size / 1024).toStringAsFixed(2);
 
     return GestureDetector(
       onDoubleTap: () => openFile(logFile),
       child: ListTile(
         leading: Text('${index + 1}'),
         title: Text(
-          fname,
+          fname + (isActiveFile ? ' [active]' : ''),
+          style: TextStyle(
+            color: isActiveFile ? Colors.deepOrange : Colors.black,
+          ),
         ),
-        subtitle: isActiveFile
-            ? const Text(
-                '(active)',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red,
-                ),
-              )
-            : null,
+        subtitle: Text(
+          '$fsize KB, $fdate',
+          style: const TextStyle(
+            color: Colors.grey,
+            fontSize: 13,
+          ),
+        ),
         trailing: Checkbox(
           value: isSelected,
           onChanged: (value) {
@@ -122,6 +129,11 @@ class LogManagerState<T extends StatefulWidget> extends State<T> {
 
   List<String> getLogFiles() {
     final list = Logging.getLogFiles()..sort();
+    fileStats.clear();
+    for (final f in list) {
+      final st = FileStat.statSync(f);
+      fileStats[f] = st;
+    }
     return list.reversed.toList();
   }
 
