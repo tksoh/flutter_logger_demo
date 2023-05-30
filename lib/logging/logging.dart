@@ -11,6 +11,7 @@ late Logger logger;
 
 class Logging {
   static const _logFolderName = 'logs';
+  static String _logFilePrefix = '';
   static final _logFilter =
       kDebugMode ? DevelopmentFilter() : ProductionFilter();
   static late File _logFile;
@@ -21,7 +22,11 @@ class Logging {
 
   Logging._(); // Logging is just a wrapper class
 
-  static Future<void> initialize() async {
+  static Future<void> initialize({String? prefix}) async {
+    if (prefix != null) {
+      _logFilePrefix = prefix;
+    }
+
     _logFile = await _openLogFile();
 
     logger = Logger(
@@ -67,7 +72,7 @@ class Logging {
     final tmpdir = await getTemporaryDirectory();
     final logDir = p.join(tmpdir.path, _logFolderName);
     final timeCode = DateFormat('yyyyMMdd').format(DateTime.now());
-    final filename = 'Log_$timeCode.txt';
+    final filename = '$_logFilePrefix$timeCode.txt';
 
     // create folder for log files
     await Directory(logDir).create(recursive: true);

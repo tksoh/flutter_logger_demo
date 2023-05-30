@@ -9,7 +9,7 @@ import 'logging/logging.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Logging.initialize();
+  await Logging.initialize(prefix: 'mylog_');
   runApp(const MyApp());
 }
 
