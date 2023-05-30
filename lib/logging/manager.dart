@@ -128,12 +128,14 @@ class LogManagerState<T extends StatefulWidget> extends State<T> {
   }
 
   List<String> getLogFiles() {
-    final list = Logging.getLogFiles()..sort();
+    final list = Logging.getLogFiles();
     fileStats.clear();
     for (final f in list) {
       final st = FileStat.statSync(f);
       fileStats[f] = st;
     }
+    list.sort(
+        (a, b) => fileStats[a]!.modified.compareTo(fileStats[b]!.modified));
     return list.reversed.toList();
   }
 
